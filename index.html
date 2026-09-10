@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wally Wiki</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=3">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-intro">
+      <p class="sidebar-name">Wally Wiki</p>
+      <p class="sidebar-subtitle" id="sidebarSubtitle"></p>
+    </div>
+
+    <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-expanded="false" aria-controls="sidebarBody">
+      <span id="sidebarToggleLabel">Show filters</span>
+      <span class="sidebar-toggle-icon" aria-hidden="true">▾</span>
+    </button>
+
+    <div class="sidebar-body" id="sidebarBody">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search resources…">
+      </div>
+
+      <p class="sidebar-section-label">--- RESOURCES ---</p>
+      <div id="sidebarResourcesPanel">
+        <details class="sidebar-menu-block" open>
+          <summary>
+            <span>Categories</span>
+            <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
+          </summary>
+          <div class="sidebar-menu-body">
+            <div class="tag-list" id="categoryNav"></div>
+          </div>
+        </details>
+
+        <details class="sidebar-menu-block" open>
+          <summary>
+            <span>Type</span>
+            <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
+          </summary>
+          <div class="sidebar-menu-body">
+            <div class="type-filter" id="typeFilter"></div>
+          </div>
+        </details>
+
+        <details class="sidebar-menu-block" open>
+          <summary>
+            <span>Tags</span>
+            <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
+          </summary>
+          <div class="sidebar-menu-body">
+            <div class="tag-list" id="tagList"></div>
+          </div>
+        </details>
+      </div>
+
+      <p class="sidebar-section-label">--- TIPS ---</p>
+      <div id="sidebarTidbitsPanel">
+        <details class="sidebar-menu-block" open>
+          <summary>
+            <span>Groups</span>
+            <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
+          </summary>
+          <div class="sidebar-menu-body">
+            <div class="tag-list" id="groupNav"></div>
+          </div>
+        </details>
+
+        <details class="sidebar-menu-block" open>
+          <summary>
+            <span>Topics</span>
+            <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
+          </summary>
+          <div class="sidebar-menu-body">
+            <div class="tag-list" id="topicFilter"></div>
+          </div>
+        </details>
+      </div>
+
+      <button class="clear-filters" id="clearFilters" style="display:none;">Clear filters</button>
+    </div>
+  </aside>
+
+  <main>
+    <header class="site">
+      <div class="site-inner">
+        <img class="hero-logo" src="Wally.svg" alt="Wally logo" height="500">
+        <div class="site-title-block">
+          <p class="site-kicker">One-stop guide to Mudd • Not an official Harvey Mudd publication </p>
+          <h1 id="siteTitle">Wally Wiki</h1>
+        </div>
+        <div class="header-actions" id="headerActions"></div>
+      </div>
+    </header>
+    <div class="results-meta" id="resultsMeta"></div>
+    <div class="grid" id="grid"></div>
+
+    <section class="field-notes-section" id="fieldNotesSection" style="display:none;">
+      <div class="field-notes-header">
+        <h2>Tips</h2>
+        <div id="tidbitFilterBanner"></div>
+      </div>
+      <div class="field-notes-grid" id="tidbitCards"></div>
+    </section>
+
+    <footer>
+      <p>
+        Wally Wiki is an independent student project and isn’t affiliated with
+        Harvey Mudd College. Information may be outdated or incorrect, so
+        double-check anything important with HMC.
+      </p>
+
+      <p>
+        Some entries are processed using AI tools, including Gemini and Grok.
+        See something that’s wrong or want an entry added or removed?
+        Email smcdermott@g.hmc.edu.
+      </p>
+
+      <p>Made by Shoshana McDermott · © 2026 Wally Wiki</p>
+    </footer>
+  </main>
+</div>
+
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+<div id="configBanner" style="display:none;"></div>
+
+<script src="script.js" defer></script>
+</body>
+</html>
