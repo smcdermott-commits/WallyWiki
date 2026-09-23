@@ -6,9 +6,17 @@
 <title>Wally Wiki</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Warm up the CDN and API connections while the HTML is still parsing, so the
+     first data request doesn't also pay for DNS + TLS setup. -->
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://zjnxhdnlvjezafvzdpop.supabase.co" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="styles.css?v=5">
+<!-- defer so the supabase-js bundle no longer blocks HTML parsing. script.js is
+     deferred as well, so the load order (library first, then the app) is
+     unchanged. -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 </head>
 <body>
 
@@ -16,7 +24,7 @@
   <aside class="sidebar">
     <div class="sidebar-intro">
       <p class="sidebar-name">Wally Wiki</p>
-      <p class="sidebar-subtitle" id="sidebarSubtitle"></p>
+      <p class="sidebar-subtitle" id="sidebarSubtitle"><span class="skeleton skeleton-line" aria-hidden="true"></span></p>
     </div>
 
     <button class="sidebar-toggle" id="sidebarToggle" type="button" aria-expanded="false" aria-controls="sidebarBody">
@@ -37,7 +45,12 @@
             <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
           </summary>
           <div class="sidebar-menu-body">
-            <div class="tag-list" id="categoryNav"></div>
+            <div class="tag-list" id="categoryNav">
+              <!-- Loading placeholders: the first render replaces this markup. -->
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+            </div>
           </div>
         </details>
 
@@ -47,7 +60,13 @@
             <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
           </summary>
           <div class="sidebar-menu-body">
-            <div class="type-filter" id="typeFilter"></div>
+            <div class="type-filter" id="typeFilter">
+              <!-- Loading placeholders: the first render replaces this markup. -->
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+            </div>
           </div>
         </details>
 
@@ -57,7 +76,12 @@
             <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
           </summary>
           <div class="sidebar-menu-body">
-            <div class="tag-list" id="tagList"></div>
+            <div class="tag-list" id="tagList">
+              <!-- Loading placeholders: the first render replaces this markup. -->
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+            </div>
           </div>
         </details>
       </div>
@@ -70,7 +94,12 @@
             <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
           </summary>
           <div class="sidebar-menu-body">
-            <div class="tag-list" id="groupNav"></div>
+            <div class="tag-list" id="groupNav">
+              <!-- Loading placeholders: the first render replaces this markup. -->
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+            </div>
           </div>
         </details>
 
@@ -80,7 +109,12 @@
             <span class="sidebar-section-toggle" aria-hidden="true">▾</span>
           </summary>
           <div class="sidebar-menu-body">
-            <div class="tag-list" id="topicFilter"></div>
+            <div class="tag-list" id="topicFilter">
+              <!-- Loading placeholders: the first render replaces this markup. -->
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+              <div class="skeleton-row" aria-hidden="true"><span class="skeleton skeleton-label"></span><span class="skeleton skeleton-count"></span></div>
+            </div>
           </div>
         </details>
       </div>
@@ -97,11 +131,53 @@
           <p class="site-kicker">One-stop guide to Mudd • Not an official Harvey Mudd publication </p>
           <h1 id="siteTitle">Wally Wiki</h1>
         </div>
-        <div class="header-actions" id="headerActions"></div>
+        <div class="header-actions" id="headerActions">
+          <!-- Loading placeholders: the first render replaces this markup. -->
+          <span class="skeleton skeleton-btn" aria-hidden="true"></span>
+          <span class="skeleton skeleton-btn" aria-hidden="true"></span>
+        </div>
       </div>
     </header>
-    <div class="results-meta" id="resultsMeta"></div>
-    <div class="grid" id="grid"></div>
+    <div class="results-meta" id="resultsMeta"><span class="skeleton skeleton-line" aria-hidden="true"></span></div>
+    <div class="grid" id="grid">
+      <!-- Loading placeholders: the first render replaces this markup. -->
+      <article class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-card-top"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-badge"></span></div>
+        <span class="skeleton skeleton-text"></span>
+        <span class="skeleton skeleton-text skeleton-short"></span>
+        <div class="skeleton-card-chips"><span class="skeleton skeleton-chip"></span><span class="skeleton skeleton-chip"></span></div>
+      </article>
+      <article class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-card-top"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-badge"></span></div>
+        <span class="skeleton skeleton-text"></span>
+        <span class="skeleton skeleton-text skeleton-short"></span>
+        <div class="skeleton-card-chips"><span class="skeleton skeleton-chip"></span><span class="skeleton skeleton-chip"></span></div>
+      </article>
+      <article class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-card-top"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-badge"></span></div>
+        <span class="skeleton skeleton-text"></span>
+        <span class="skeleton skeleton-text skeleton-short"></span>
+        <div class="skeleton-card-chips"><span class="skeleton skeleton-chip"></span><span class="skeleton skeleton-chip"></span></div>
+      </article>
+      <article class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-card-top"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-badge"></span></div>
+        <span class="skeleton skeleton-text"></span>
+        <span class="skeleton skeleton-text skeleton-short"></span>
+        <div class="skeleton-card-chips"><span class="skeleton skeleton-chip"></span><span class="skeleton skeleton-chip"></span></div>
+      </article>
+      <article class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-card-top"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-badge"></span></div>
+        <span class="skeleton skeleton-text"></span>
+        <span class="skeleton skeleton-text skeleton-short"></span>
+        <div class="skeleton-card-chips"><span class="skeleton skeleton-chip"></span><span class="skeleton skeleton-chip"></span></div>
+      </article>
+      <article class="skeleton-card" aria-hidden="true">
+        <div class="skeleton-card-top"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-badge"></span></div>
+        <span class="skeleton skeleton-text"></span>
+        <span class="skeleton skeleton-text skeleton-short"></span>
+        <div class="skeleton-card-chips"><span class="skeleton skeleton-chip"></span><span class="skeleton skeleton-chip"></span></div>
+      </article>
+    </div>
 
     <section class="field-notes-section" id="fieldNotesSection" style="display:none;">
       <div class="field-notes-header">
@@ -113,14 +189,14 @@
 
     <footer>
       <p>
-        Wally Wiki is an independent student project and isn’t affiliated with
+        Wally Wiki is an independent student project and isn't affiliated with
         Harvey Mudd College. Information may be outdated or incorrect, so
         double-check anything important with HMC.
       </p>
 
       <p>
         Some entries are processed using AI tools, including Gemini and Groq.
-        See something that’s wrong or want an entry added or removed?
+        See something that's wrong or want an entry added or removed?
         Email smcdermott@g.hmc.edu.
       </p>
 

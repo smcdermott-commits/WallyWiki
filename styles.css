@@ -1,20 +1,48 @@
-:root{
+  /* ---------- Design tokens ----------
+     Every color in the sheet comes from one of these three groups.
+    The palette uses semantic roles so component rules do not need their own
+    near-duplicate color variables. */
+  :root{
+    /* Main (light) palette */
     --bg: #f0d8a9;
     --surface: #f9f7e4;
-    --surface-alt: #EAAA00;
+    --white: #ffffff;
     --ink: #1E2A24;
+    --ink-hover: #132019;
+    --on-accent: #101010;
     --ink-soft: #57645C;
     --ink-faint: #856204;
+    --ink-muted: #7a6b5d;
     --accent: #EAAA00;
     --accent-soft: #f1eecb;
-    --accent2: #C9A227;
-    --accent3:#bb9106;
-    --accent2-soft: #e8dcb4;
+    --accent-border: #C9A227;
+    --accent-hover: #bb9106;
+    --accent-hover-soft: #e8dcb4;
     --line: #DCCB86;
     --danger: #A63B2E;
-    --black: #101010;
+
+    /* Sidebar (dark) palette */
+    --sidebar-bg: #1e1c1a;
+    --sidebar-line: #3a352f;
+    --sidebar-divider: rgba(216,199,175,0.25);
+    --sidebar-text: #f4efe7;
+    --sidebar-text-strong: #fff8ef;
+    --sidebar-text-soft: #efe7dc;
+    --sidebar-text-muted: #d8c7af;
+    --sidebar-accent: #caa337;
+    --sidebar-accent-hover: #e3c26c;
+    --sidebar-control-bg: #2b2724;
+    --sidebar-control-line: #4a413b;
+    --sidebar-active-bg: #3b2d1f;
+    --sidebar-active-line: #d4a64c;
+
+    /* Shape, depth, and overlays */
     --radius: 6px;
-    --app-accent: #5C6B8C;
+    --shadow-card: 0 1px 0 rgba(16,16,16,0.05);
+    --shadow-hover: 0 8px 18px rgba(17,14,11,0.08);
+    --shadow-panel: 0 10px 24px rgba(17,14,11,0.12);
+    --shadow-focus: 0 0 0 2px rgba(201,162,39,0.18);
+    --overlay: rgba(20,26,22,0.45);
   }
   *{box-sizing:border-box;}
   body{
@@ -30,12 +58,13 @@
     line-height:1.4;
     -webkit-font-smoothing:antialiased;
   }
+  /* Everything small-label-ish is IBM Plex Mono. `.sidebar` covers the whole
+     dark sidebar (its own rules no longer redeclare the family), while the
+     named selectors below are outside it and need it spelled out. */
   .mono,
   .sidebar,
-  .sidebar h2,
   .site-title-block h1,
   .site-kicker,
-  .site-disclaimer,
   .card-title,
   .type-badge,
   .results-meta,
@@ -44,8 +73,7 @@
   .tidbit-group-header h2,
   .tidbit-group-header p,
   .tidbit-card-header h3,
-  .tidbit-topic-header h3,
-  .tidbit-source-label,
+  .tidbit-resource-topic,
   .tag-item .count{
     font-family:'IBM Plex Mono', monospace;
   }
@@ -91,17 +119,9 @@
     letter-spacing:.16em;
     text-transform:uppercase;
     font-weight:600;
-    color:#7a6b5d;
+    color:var(--ink-muted);
     margin-bottom:6px;
     white-space:nowrap;
-  }
-  .site-disclaimer{
-    color:#8c7260;
-    margin-bottom:8px;
-  }
-  .site-kicker::after{
-    content:"";
-    margin-left:0;
   }
   .header-actions{
     display:flex;
@@ -125,17 +145,17 @@
   .btn:hover{ border-color:var(--ink-soft); }
   .btn-primary{
     background:var(--ink);
-    color:#fff;
+    color:var(--white);
     border-color:var(--ink);
   }
-  .btn-primary:hover{ background:#132019; }
+  .btn-primary:hover{ background:var(--ink-hover); }
   .btn-accent{
     background:var(--accent);
-    color:var(--black);
+    color:var(--on-accent);
     border-color:var(--accent);
     font-weight:600;
   }
-  .btn-accent:hover{ background:var(--accent2); border-color:var(--accent2); }
+  .btn-accent:hover{ background:var(--accent-hover); border-color:var(--accent-hover); }
   .btn-ghost{
     background:transparent;
     border-color:transparent;
@@ -147,7 +167,7 @@
     color:var(--danger);
     background:transparent;
   }
-  .btn-danger:hover{ background:var(--danger); color:#fff; }
+  .btn-danger:hover{ background:var(--danger); color:var(--white); }
   .btn-sm{ padding:5px 9px; font-size:13px; }
 
   /* ---------- Layout ---------- */
@@ -171,19 +191,19 @@
     top:0;
     min-height:100vh;
     height:100vh;
-    background:#1e1c1a;
-    border-right:1px solid #3a352f;
+    background:var(--sidebar-bg);
+    border-right:1px solid var(--sidebar-line);
     border-radius:0;
     padding:18px 14px 20px;
-    color:#f4efe7;
+    color:var(--sidebar-text);
     overflow-x:hidden;
     overflow-y:auto;
-    box-shadow:0 10px 24px rgba(17,14,11,0.12);
+    box-shadow:var(--shadow-panel);
   }
   .sidebar-intro{
     margin-bottom:18px;
     padding-bottom:12px;
-    border-bottom:1px solid rgba(216,199,175,0.25);
+    border-bottom:1px solid var(--sidebar-divider);
   }
   .sidebar-name{
     margin:0;
@@ -191,15 +211,14 @@
     line-height:1.2;
     letter-spacing:.18em;
     text-transform:uppercase;
-    color:#caa337;
-    font-family:'IBM Plex Mono', monospace;
+    color:var(--sidebar-accent);
     font-weight:600;
   }
   .sidebar-subtitle{
     margin:8px 0 0;
     font-size:13px;
     line-height:1.5;
-    color:#f4efe7;
+    color:var(--sidebar-text);
   }
   .search-box{
     margin-bottom:22px;
@@ -207,15 +226,15 @@
   .search-box input{
     width:100%;
     padding:10px 12px;
-    border:1px solid #4a413b;
+    border:1px solid var(--sidebar-control-line);
     border-radius:var(--radius);
     font-size:14px;
     font-family:inherit;
-    background:#2b2724;
-    color:#f4efe7;
+    background:var(--sidebar-control-bg);
+    color:var(--sidebar-text);
   }
   .search-box input:focus{
-    outline:2px solid var(--accent2);
+    outline:2px solid var(--accent-border);
     outline-offset:1px;
   }
   .sidebar-section-label{
@@ -224,18 +243,9 @@
     line-height:1.2;
     letter-spacing:.18em;
     text-transform:uppercase;
-    color:#d8c7af;
-    font-family:'IBM Plex Mono', monospace;
+    color:var(--sidebar-text-muted);
     font-weight:600;
     text-align:center;
-  }
-  .sidebar h2{
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-    color:#caa337;
-    margin:0 0 10px;
-    font-weight:600;
   }
   .sidebar-menu-block{
     display:block;
@@ -251,8 +261,7 @@
     font-size:12px;
     text-transform:uppercase;
     letter-spacing:.06em;
-    color:#caa337;
-    font-family:'IBM Plex Mono', monospace;
+    color:var(--sidebar-accent);
     font-weight:600;
     cursor:pointer;
   }
@@ -262,14 +271,14 @@
     content:"";
   }
   .sidebar-menu-block summary:hover{
-    color:#e3c26c;
+    color:var(--sidebar-accent-hover);
   }
   .sidebar-section-toggle{
     display:inline-flex;
     align-items:center;
     justify-content:center;
     font-size:11px;
-    color:#d8c7af;
+    color:var(--sidebar-text-muted);
     transition:transform .15s ease;
   }
   .sidebar-menu-block:not([open]) .sidebar-section-toggle{
@@ -284,12 +293,12 @@
     gap:2px;
     margin-bottom:0;
   }
-  #sidebarResourcesPanel, #sidebarTidbitsPanel{ animation: sidebarFadeIn .15s ease; }
   #sidebarResourcesPanel,
   #sidebarTidbitsPanel{
     overflow-x:hidden;
     overflow-y:auto;
     padding-right:2px;
+    animation:sidebarFadeIn .15s ease;
   }
   @keyframes sidebarFadeIn{ from{ opacity:0; } to{ opacity:1; } }
 
@@ -299,8 +308,8 @@
   }
   .rename-cat-input:focus, .rename-tag-input:focus, .rename-topic-input:focus, .rename-group-input:focus{
     outline:none;
-    border-color:var(--accent2) !important;
-    background:#fff !important;
+    border-color:var(--accent-border) !important;
+    background:var(--white) !important;
   }
   .topic-group-select{
     border:1px solid var(--line);
@@ -309,6 +318,12 @@
     background:var(--surface);
     color:var(--ink-soft);
   }
+
+  /* Rows in the sidebar filter lists (categories, types, tags, groups, topics).
+     The Categories/Tags/Topics management modals reuse the same row markup on a
+     light background, so the base rule carries the light palette and the dark
+     sidebar treatment is scoped to `.sidebar` below — neither side has to undo
+     the other. */
   .tag-item{
     display:flex;
     justify-content:space-between;
@@ -317,7 +332,7 @@
     padding:6px 8px;
     border-radius:var(--radius);
     font-size:14px;
-    color:#efe7dc;
+    color:var(--ink);
     background:transparent;
     border:1px solid transparent;
     text-align:left;
@@ -327,21 +342,40 @@
     flex:1 1 auto;
     min-width:0;
   }
+  .tag-item .count{ font-size:12px; color:var(--ink-faint); }
   .tag-item:hover{
-    background:#2b2724;
-    color:#fff8ef;
-    font-weight:bold;
-    border-color:#4a413b;
+    background:var(--accent-soft);
+    color:var(--ink);
+    border-color:var(--accent-border);
   }
-  .tag-item.active{
-    background:#3b2d1f;
-    color:#fff8ef;
-    border-color:#d4a64c;
+  .tag-item:hover .count{ color:var(--ink); }
+  .tag-item.dragging{ opacity:.4; }
+  .tag-item.drag-over{
+    background:var(--accent-soft);
+    border-color:var(--accent-border);
+  }
+
+  /* Dark palette for those same rows when they sit in the sidebar. */
+  .sidebar .tag-item{ color:var(--sidebar-text-soft); }
+  .sidebar .tag-item .count{ color:var(--sidebar-text-muted); }
+  .sidebar .tag-item:hover{
+    background:var(--sidebar-control-bg);
+    color:var(--sidebar-text-strong);
+    border-color:var(--sidebar-control-line);
+    font-weight:bold;
+  }
+  .sidebar .tag-item:hover .count{ color:var(--sidebar-text-strong); }
+  .sidebar .tag-item.active{
+    background:var(--sidebar-active-bg);
+    color:var(--sidebar-text-strong);
+    border-color:var(--sidebar-active-line);
     font-weight:600;
   }
-  .tag-item .count{ font-size:12px; color:#d7c7af; font-family:'IBM Plex Mono',monospace; }
-  .tag-item:hover .count,
-  .tag-item.active .count{ color:#fff8ef; }
+  .sidebar .tag-item.active .count{ color:var(--sidebar-text-strong); }
+  .sidebar .tag-item.drag-over{
+    background:var(--sidebar-active-bg);
+    border-color:var(--sidebar-active-line);
+  }
 
   /* Drag-to-reorder rows (categories, tidbit groups) */
   .draggable-row{ transition:background-color .1s ease, opacity .1s ease; }
@@ -350,34 +384,9 @@
     flex-shrink:0; user-select:none; padding:0 2px;
   }
   .drag-handle:active{ cursor:grabbing; }
-  .tag-item.dragging{ opacity:.4; }
-  .tag-item.drag-over{ background:#3b2d1f; border-color:#d4a64c; }
-
-  /* The base .tag-item colors above are tuned for the dark sidebar (light
-     text on a near-black background). The Categories, Tags, and Topics/Groups
-     management popups reuse the same .tag-item rows on a light modal
-     background, so without an override the light text is nearly invisible.
-     This scopes a separate, legible palette to just those modal lists. */
-  .modal-tag-list .tag-item{
-    color:var(--ink);
-    border-color:transparent;
-  }
-  .modal-tag-list .tag-item:hover{
-    background:var(--accent-soft);
-    color:var(--ink);
-    border-color:var(--accent2);
-    font-weight:400;
-  }
-  .modal-tag-list .tag-item .count{ color:var(--ink-faint); }
-  .modal-tag-list .tag-item:hover .count{ color:var(--ink); }
-  .modal-tag-list .drag-handle{ color:var(--ink-faint); }
-  .modal-tag-list .tag-item.drag-over{
-    background:var(--accent-soft);
-    border-color:var(--accent2);
-  }
   .clear-filters{
     font-size:13px;
-    color:#d7c7af;
+    color:var(--sidebar-text-muted);
     background:none;
     border:none;
     padding:6px 0 0;
@@ -390,30 +399,43 @@
   main{ min-width:0; padding:18px 18px 56px; }
   .results-meta{
     font-size:13px;
-    color:#7a6b5d;
+    color:var(--ink-muted);
     margin-bottom:10px;
-    font-family:'IBM Plex Mono', monospace;
   }
-  .grid{
+  .grid,
+  .field-notes-group-grid,
+  .tidbit-topic-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(280px,1fr));
+    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
     gap:16px;
+    align-items:stretch;
   }
-  .card{
+
+  /* Card surfaces: resource cards, tip group cards, tip topic cards, and the
+     tip-picker rows in the "attach a tip" modal all share one box treatment. */
+  .card,
+  .tidbit-group-card,
+  .tidbit-topic-card,
+  .tidbit-resource-item{
     background:var(--surface);
     border:1px solid var(--line);
-    border-left:3px solid var(--accent2);
     border-radius:var(--radius);
+  }
+  .card,
+  .tidbit-topic-card{
     padding:14px 15px 12px;
     display:flex;
     flex-direction:column;
     gap:8px;
     transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  }
+  .card{
+    border-left:3px solid var(--accent-border);
     cursor:pointer;
   }
   .card:hover{
-    border-color:var(--accent3);
-    box-shadow:0 8px 18px rgba(17,14,11,0.08);
+    border-color:var(--accent-hover);
+    box-shadow:var(--shadow-hover);
   }
 
   .card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
@@ -422,7 +444,6 @@
   .card-title{ font-size:16px; font-weight:600; line-height:1.3; margin:0; color:var(--ink); }
   .type-badge{
     font-size:11px;
-    font-family:'IBM Plex Mono', monospace;
     color:var(--ink-faint);
     white-space:nowrap;
     padding-top:2px;
@@ -438,10 +459,10 @@
     border:1px solid var(--line);
   }
   .chip:hover{
-    background:var(--accent2-soft);
-    border-color:var(--accent2);
+    background:var(--accent-hover-soft);
+    border-color:var(--accent-border);
     cursor:pointer;
-    color:var(--black);
+    color:var(--on-accent);
     font-weight:500;
   }
   .card-bottom{
@@ -451,13 +472,16 @@
     margin-top:auto;
     padding-top:6px;
   }
-  .card-link{
-    font-size:13.5px;
+  /* Inline link-style controls: "visit", "N tips →", and friends. */
+  .card-link,
+  .card-tidbit-link{
     font-weight:500;
-    color:var(--accent2);
+    color:var(--accent-border);
     text-decoration:none;
   }
-  .card-link:hover{ text-decoration:underline; }
+  .card-link{ font-size:13.5px; }
+  .card-link:hover,
+  .card-tidbit-link:hover{ text-decoration:underline; }
   .card-admin-actions{ display:flex; gap:8px; }
   .icon-btn{
     background:none;
@@ -472,20 +496,18 @@
 
   .category-list{ display:flex; flex-direction:column; gap:28px; }
   .category-section{ display:flex; flex-direction:column; gap:10px; }
-  .category-header{
+  /* Section headers — resource categories and tip groups. Both are rendered as
+     a <button> so the whole row toggles its section, which is why the shared
+     rule also resets the default button chrome and fills the row. */
+  .category-header,
+  .tidbit-group-header{
     display:flex;
     align-items:baseline;
     gap:10px;
     padding-bottom:6px;
-    border-bottom:1px solid var(--line);
-  }
-  /* .category-header is rendered as a <button> so the whole row is clickable
-     to collapse/expand its section — reset default button chrome and let it
-     fill the row like the plain-div version it replaced. */
-  button.category-header{
-    background:none;
     border:none;
     border-bottom:1px solid var(--line);
+    background:none;
     width:100%;
     text-align:left;
     cursor:pointer;
@@ -493,9 +515,16 @@
     padding-left:0;
     padding-right:0;
   }
-  button.category-header:hover{ border-bottom-color:var(--accent2); }
-  button.category-header:hover h2{ color:var(--accent3); }
-  .category-header h2{
+  .tidbit-group-header{
+    align-items:flex-end;
+    gap:12px;
+  }
+  button.category-header:hover,
+  button.tidbit-group-header:hover{ border-bottom-color:var(--accent-border); }
+  button.category-header:hover h2,
+  button.tidbit-group-header:hover h2{ color:var(--accent-hover); }
+  .category-header h2,
+  .tidbit-group-header h2{
     margin:0;
     font-size:18px;
     font-weight:700;
@@ -503,7 +532,6 @@
   }
   .category-count{
     font-size:12.5px;
-    font-family:'IBM Plex Mono', monospace;
     color:var(--ink-faint);
   }
   .category-toggle-icon{
@@ -514,17 +542,8 @@
     transition:transform .15s ease;
   }
   .category-section.collapsed .category-toggle-icon{ transform:rotate(-90deg); }
-  .category-section.collapsed .grid{ display:none; }
-  .show-more-btn{
-    align-self:flex-start;
-    background:none;
-    border:none;
-    font-size:13.5px;
-    color:var(--accent2);
-    font-weight:500;
-    padding:2px 0;
-  }
-  .show-more-btn:hover{ text-decoration:underline; }
+  .category-section.collapsed .grid,
+  .tidbit-group-card.collapsed .tidbit-topic-grid{ display:none; }
 
   /* ---------- Field Notes ---------- */
   .field-notes-section{
@@ -551,79 +570,30 @@
     flex-direction:column;
     gap:22px;
   }
-  .field-notes-group-grid,
-  .tidbit-topic-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));
-    gap:16px;
-    align-items:stretch;
-  }
   .tidbit-group-card{
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-radius:var(--radius);
     padding:14px 15px 12px;
     display:flex;
     flex-direction:column;
     gap:10px;
-    box-shadow:0 1px 0 rgba(16,16,16,0.05);
+    box-shadow:var(--shadow-card);
   }
-  .tidbit-group-header{
-    display:flex;
-    justify-content:flex-start;
-    align-items:flex-end;
-    gap:12px;
-    padding-bottom:6px;
-    border-bottom:1px solid var(--line);
-  }
-  /* Same treatment as button.category-header — the header is a <button> so
-     the whole row toggles the group's tips open/closed. */
-  button.tidbit-group-header{
-    background:none;
-    border:none;
-    border-bottom:1px solid var(--line);
-    width:100%;
-    text-align:left;
-    cursor:pointer;
-    font:inherit;
-    padding-left:0;
-    padding-right:0;
-  }
-  button.tidbit-group-header:hover{ border-bottom-color:var(--accent2); }
-  button.tidbit-group-header:hover h2{ color:var(--accent3); }
   .tidbit-group-header .category-toggle-icon{
     /* Align with the two-line title+count block instead of the single-line
        baseline used for resource category headers. */
     margin-bottom:2px;
   }
-  .tidbit-group-header h2{
-    margin:0;
-    font-size:18px;
-    font-weight:700;
-    color:var(--ink);
-  }
   .tidbit-group-header p{
     margin:4px 0 0;
     font-size:12.5px;
     color:var(--ink-faint);
-    font-family:'IBM Plex Mono', monospace;
   }
-  .tidbit-group-card.collapsed .tidbit-topic-grid{ display:none; }
   .tidbit-topic-card{
-    background:var(--surface);
-    border:1px solid var(--line);
     border-left:3px solid var(--accent);
-    border-radius:var(--radius);
-    padding:14px 15px 12px;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    box-shadow:0 1px 0 rgba(16,16,16,0.05);
-    transition:box-shadow .15s ease, border-color .15s ease, transform .15s ease;
+    box-shadow:var(--shadow-card);
   }
   .tidbit-topic-card.tidbit-focus{
-    border-color:var(--accent2);
-    box-shadow:0 0 0 2px rgba(201,162,39,0.18);
+    border-color:var(--accent-border);
+    box-shadow:var(--shadow-focus);
   }
   .tidbit-card-header{
     display:flex;
@@ -638,21 +608,6 @@
     font-size:16px;
     font-weight:600;
     line-height:1.3;
-    color:var(--ink);
-  }
-  .tidbit-topic{
-    width:100%;
-  }
-  .tidbit-topic-header{
-    display:flex;
-    align-items:baseline;
-    gap:8px;
-    margin-bottom:7px;
-  }
-  .tidbit-topic-header h3{
-    margin:0;
-    font-size:15px;
-    font-weight:700;
     color:var(--ink);
   }
   .tidbit-list{
@@ -692,11 +647,6 @@
     line-height:1.45;
     color:var(--ink-soft);
   }
-  .tidbit-content{
-    min-width:0;
-    flex:1;
-    display:block;
-  }
   .tidbit-item .tidbit-text{
     display:block;
     font-size:14px;
@@ -704,59 +654,6 @@
     color:var(--ink);
     padding-right:24px;
   }
-  .tidbit-expand-hint{
-    position:absolute;
-    right:8px;
-    top:8px;
-    font-size:16px;
-    line-height:1;
-    color:var(--ink-faint);
-    transition:transform .15s;
-  }
-  .tidbit-item[aria-expanded="true"] .tidbit-expand-hint{
-    transform:rotate(45deg);
-  }
-  .tidbit-expanded{
-    display:block;
-  }
-  .tidbit-expanded-source{
-    margin-top:7px;
-    padding:8px 10px 8px 12px;
-    border-left:2px solid var(--accent2);
-    background:transparent;
-    color:var(--ink-soft);
-    font-size:12.5px;
-    line-height:1.45;
-  }
-  .tidbit-source-label{
-    display:block;
-    margin-bottom:2px;
-    font-size:10.5px;
-    font-family:'IBM Plex Mono', monospace;
-    text-transform:uppercase;
-    letter-spacing:.05em;
-    color:var(--ink-faint);
-  }
-  .tidbit-source-link{
-    border:0;
-    padding:0;
-    background:transparent;
-    color:var(--accent2);
-    font:inherit;
-    font-weight:500;
-    text-align:left;
-    cursor:pointer;
-  }
-  .tidbit-source-link:hover{ text-decoration:underline; }
-  .tidbit-expanded-source p{
-    margin:3px 0 4px;
-    color:var(--ink-soft);
-  }
-  .tidbit-expanded-source a{
-    color:var(--accent2);
-    text-decoration:none;
-  }
-  .tidbit-expanded-source a:hover{ text-decoration:underline; }
   .tidbit-no-source{ color:var(--ink-soft); }
   .tidbit-actions{
     position:absolute;
@@ -765,38 +662,15 @@
     display:flex;
     gap:2px;
   }
-  .tidbit-actions .icon-btn{
-    padding:2px 4px;
-  }
 
-  /* ---------- Field Notes: group sections (topics nested under a group) ---------- */
-  .tidbit-group-section{
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    margin-bottom:28px;
-  }
-  .tidbit-group-section:last-child{ margin-bottom:0; }
-  .tidbit-group-section .category-header{
-    padding-bottom:8px;
-    border-bottom:1px solid var(--line);
-  }
-  .tidbit-group-section .category-header h2{
-    font-size:17px;
-    font-weight:700;
-    color:var(--ink);
-    margin:0;
-  }
+  /* ---------- Field Notes: cards inside a group ---------- */
   .card-tidbit-link{
     background:none;
     border:none;
     padding:0;
     font-size:13px;
-    font-weight:500;
-    color:var(--accent2);
     cursor:pointer;
   }
-  .card-tidbit-link:hover{ text-decoration:underline; }
 
   .empty-state{
     padding:60px 20px;
@@ -810,7 +684,7 @@
   /* ---------- Modal ---------- */
   .overlay{
     position:fixed; inset:0;
-    background:rgba(20,26,22,0.45);
+    background:var(--overlay);
     display:flex; align-items:flex-start; justify-content:center;
     padding:60px 20px;
     z-index:50;
@@ -838,12 +712,9 @@
   .tidbit-resource-item{
     width:100%;
     text-align:left;
-    background:var(--surface);
-    border:1px solid var(--line);
-    border-left:3px solid var(--accent2);
-    border-radius:var(--radius);
+    border-left:3px solid var(--accent-border);
     padding:12px 14px;
-    box-shadow:0 1px 0 rgba(16,16,16,0.05);
+    box-shadow:var(--shadow-card);
     color:var(--ink);
     cursor:pointer;
     transition:border-color .15s ease, background .15s ease, transform .15s ease;
@@ -851,7 +722,7 @@
   .tidbit-resource-item:hover,
   .tidbit-resource-item:focus-visible{
     background:var(--accent-soft);
-    border-color:var(--accent2);
+    border-color:var(--accent-border);
     outline:none;
     transform:translateY(-1px);
   }
@@ -859,7 +730,6 @@
     display:block;
     margin-bottom:4px;
     font-size:11px;
-    font-family:'IBM Plex Mono', monospace;
     letter-spacing:.05em;
     text-transform:uppercase;
     color:var(--ink-faint);
@@ -885,11 +755,11 @@
     border-radius:var(--radius);
     font-family:inherit;
     font-size:14px;
-    background:#fff;
+    background:var(--white);
     color:var(--ink);
   }
   .field textarea{ resize:vertical; min-height:64px; }
-  .field input:focus, .field textarea:focus, .field select:focus{ outline:2px solid var(--accent2); outline-offset:1px; }
+  .field input:focus, .field textarea:focus, .field select:focus{ outline:2px solid var(--accent-border); outline-offset:1px; }
   .type-toggle{ display:flex; gap:8px; }
   .type-toggle label{
     flex:1;
@@ -902,8 +772,8 @@
     color:var(--ink-soft);
   }
   .type-toggle input{ display:none; }
-  .type-toggle input:checked + span{ color:var(--black); font-weight:600; }
-  .type-toggle label:has(input:checked){ border-color:var(--accent2); background:var(--accent2-soft); }
+  .type-toggle input:checked + span{ color:var(--on-accent); font-weight:600; }
+  .type-toggle label:has(input:checked){ border-color:var(--accent-border); background:var(--accent-hover-soft); }
   .tag-suggest-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
   .tag-suggest-row button{ font-size:12px; }
   .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
@@ -934,7 +804,7 @@
 
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    background:var(--ink); color:#fff; padding:11px 20px; border-radius:var(--radius);
+    background:var(--ink); color:var(--white); padding:11px 20px; border-radius:var(--radius);
     font-size:14px; z-index:100; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s;
   }
   .toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
@@ -965,7 +835,7 @@
       height:auto;
       padding:14px 12px 10px;
       border-right:none;
-      border-bottom:1px solid #3a352f;
+      border-bottom:1px solid var(--sidebar-line);
     }
     .sidebar-intro{ margin-bottom:12px; }
     .sidebar-subtitle{ font-size:12px; }
@@ -979,18 +849,17 @@
       align-items:center;
       justify-content:space-between;
       gap:8px;
-      background:#2b2724;
-      color:#f4efe7;
-      border:1px solid #4a413b;
+      background:var(--sidebar-control-bg);
+      color:var(--sidebar-text);
+      border:1px solid var(--sidebar-control-line);
       border-radius:var(--radius);
       padding:10px 12px;
-      font-family:'IBM Plex Mono', monospace;
       font-size:11px;
       text-transform:uppercase;
       letter-spacing:.1em;
       font-weight:600;
     }
-    .sidebar-toggle:hover{ border-color:var(--accent2); }
+    .sidebar-toggle:hover{ border-color:var(--accent-border); }
     .sidebar-toggle-icon{
       font-size:11px;
       transition:transform .15s ease;
@@ -1086,7 +955,7 @@
       padding:11px 12px;
     }
     .sidebar-menu-block summary{ font-size:10.5px; }
-    .tag-item{ padding:9px 10px; font-size:13px; }
+    .tag-item{ padding:9px 10px; }
 
     .site-inner{ gap:10px; }
     .hero-logo{ width:56px; }
@@ -1116,19 +985,16 @@
     .card-link{ font-size:13px; }
     .icon-btn{ padding:6px 7px; font-size:14px; } /* bigger tap target */
 
-    .category-header{ flex-wrap:wrap; row-gap:4px; }
-    .category-header h2{ font-size:16px; }
+    .category-header,
+    .tidbit-group-header{ flex-wrap:wrap; row-gap:4px; }
+    .category-header h2,
+    .tidbit-group-header h2{ font-size:16px; }
     .category-count{ font-size:11px; }
 
     .field-notes-header h2{ font-size:17px; }
-    .tidbit-group-header{ flex-wrap:wrap; row-gap:4px; }
-    .tidbit-group-header h2{ font-size:16px; }
     .tidbit-card-header h3{ font-size:14.5px; }
-    .tidbit-topic-header h3{ font-size:14px; }
     .tidbit-item{ padding:8px 5px; }
-    .tidbit-item .tidbit-text{ font-size:13px; }
     .tidbit-actions{ top:6px; right:26px; }
-    .tidbit-expand-hint{ right:6px; top:9px; }
 
     /* Modal: less wasted top padding, edge-to-edge-ish sheet feel */
     .overlay{ padding:16px 10px; align-items:flex-start; }
@@ -1163,4 +1029,52 @@
     .toast.show{ transform:translateY(-4px); }
 
     footer{ font-size:11.5px; margin-top:18px; padding-top:14px; }
+  }
+
+  /* ---------- Loading skeletons ----------
+     index.html ships static placeholders in the sidebar lists, header actions,
+     results line, and card grid. They're painted as soon as the HTML is parsed
+     (before any script runs), and each of those containers is emptied and
+     rewritten by the first render, so the placeholders disappear on their own.
+     This is a loading state only — none of the real rules above are touched. */
+  @keyframes skeletonPulse{ from{ opacity:.45; } to{ opacity:.9; } }
+  .skeleton{
+    display:block;
+    background:var(--line);
+    border-radius:4px;
+    animation:skeletonPulse .9s ease-in-out infinite alternate;
+  }
+  .skeleton-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:3px solid var(--accent-border);
+    border-radius:var(--radius);
+    padding:14px 15px 12px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .skeleton-card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+  .skeleton-card-chips{ display:flex; gap:6px; margin-top:2px; }
+  .skeleton-line{ height:13px; width:130px; }
+  .skeleton-title{ height:16px; width:62%; }
+  .skeleton-badge{ height:11px; width:54px; flex-shrink:0; }
+  .skeleton-text{ height:11px; width:100%; }
+  .skeleton-short{ width:70%; }
+  .skeleton-chip{ height:20px; width:62px; border-radius:100px; }
+  .skeleton-btn{ height:34px; width:104px; border-radius:var(--radius); }
+  .skeleton-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    padding:6px 8px;
+  }
+  .skeleton-label{ height:11px; width:96px; }
+  .skeleton-count{ height:11px; width:16px; }
+  /* The sidebar filter lists sit on the dark panel, so their placeholders use
+     the sidebar control colour instead of the light one. */
+  .sidebar .skeleton{ background:var(--sidebar-control-line); }
+  @media (prefers-reduced-motion:reduce){
+    .skeleton{ animation:none; }
   }

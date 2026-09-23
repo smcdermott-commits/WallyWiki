@@ -114,12 +114,17 @@ function saveCollapsedGroups(){
   try{ localStorage.setItem('wallyCollapsedGroups', JSON.stringify([...collapsedGroups])); }catch(e){ /* ignore (private browsing, etc.) */ }
 }
 
-/* ---------------- Data access (Supabase, with local fallback) ---------------- */
-async function loadResources(){
-  if(!CONFIGURED) return SEED_RESOURCES;
-  const { data, error } = await supabaseClient.from('resources').select('*').order('added_at', { ascending: false });
-  if(error){ console.error(error); showToast('Could not load resources — check Supabase setup.'); return []; }
-  return data.map(r => ({
+/* ---------------- Data access (Supabase, with local fallback) ----------------
+   Only the columns the UI actually reads are requested. Naming them keeps a
+   column added to a table later from silently growing the payload the browser
+   has to download for every visitor. */
+const RESOURCE_COLUMNS = 'id, title, description, type, url, category, tags, source_text, icon_url, app_store_url, screenshots, added_at';
+const TIDBIT_COLUMNS = 'id, resource_id, topic, text, position';
+const SETTINGS_COLUMNS = 'title, subtitle, categories, tidbit_topics, tidbit_groups, topic_groups';
+const RESOURCE_PAGE_SIZE = 6;
+
+function mapResourceRow(r){
+  return {
     id: r.id,
     title: r.title,
     description: r.description || '',
@@ -132,12 +137,39 @@ async function loadResources(){
     appStoreUrl: r.app_store_url || '',
     screenshots: r.screenshots || [],
     addedAt: new Date(r.added_at).getTime()
-  }));
+  };
+}
+
+async function loadResourcePage(from, to){
+  if(!CONFIGURED) return SEED_RESOURCES.slice(from, to + 1);
+  const { data, error } = await supabaseClient
+    .from('resources')
+    .select(RESOURCE_COLUMNS)
+    .order('added_at', { ascending: false })
+    .order('id', { ascending: false })
+    .range(from, to);
+  if(error){
+    console.error(error);
+    showToast('Could not load more resources.');
+    return null;
+  }
+  return data.map(mapResourceRow);
+}
+
+async function loadResources(){
+  if(!CONFIGURED) return SEED_RESOURCES;
+  const { data, error } = await supabaseClient
+    .from('resources')
+    .select(RESOURCE_COLUMNS)
+    .order('added_at', { ascending: false })
+    .order('id', { ascending: false });
+  if(error){ console.error(error); showToast('Could not load resources — check Supabase setup.'); return []; }
+  return data.map(mapResourceRow);
 }
 
 async function loadSettings(){
   if(!CONFIGURED) return { ...DEFAULT_SETTINGS, categories: [], tidbitTopics: [], tidbitGroups: [], topicGroups: {} };
-  const { data, error } = await supabaseClient.from('site_settings').select('*').eq('id', 1).single();
+  const { data, error } = await supabaseClient.from('site_settings').select(SETTINGS_COLUMNS).eq('id', 1).single();
   if(error || !data) return { ...DEFAULT_SETTINGS, categories: [], tidbitTopics: [], tidbitGroups: [], topicGroups: {} };
   return {
     title: data.title, subtitle: data.subtitle,
@@ -157,7 +189,7 @@ async function loadCategories(){
   }
   if(settings.categories && settings.categories.length){
     const cleaned = settings.categories.filter(c => c && c.toLowerCase() !== 'uncategorized');
-    if(cleaned.length !== settings.categories.length) await saveCategoriesRow(cleaned); // scrub a previously-saved bad entry, keep order
+    if(cleaned.length !== settings.categories.length) void saveCategoriesRow(cleaned); // repair without delaying first paint
     return cleaned;
   }
   // Nothing saved yet (e.g. first run after adding this feature) — derive a
@@ -165,7 +197,7 @@ async function loadCategories(){
   const set = new Set();
   resources.forEach(r => { if(r.category && r.category.toLowerCase() !== 'uncategorized') set.add(r.category); });
   const derived = [...set].sort((a,b)=> a.localeCompare(b));
-  if(derived.length) await saveCategoriesRow(derived);
+  if(derived.length) void saveCategoriesRow(derived);
   return derived;
 }
 
@@ -255,7 +287,7 @@ async function insertResource(r){
   const { data, error } = await supabaseClient.from('resources').insert({
     title: r.title, description: r.description, type: r.type, url: r.url, category: r.category, tags: r.tags, source_text: r.sourceText || '',
     icon_url: r.iconUrl || '', app_store_url: r.appStoreUrl || '', screenshots: r.screenshots || []
-  }).select().single();
+  }).select(RESOURCE_COLUMNS).single();
   if(error){ console.error(error); showToast('Save failed: ' + error.message); return null; }
   return { id: data.id, title: data.title, description: data.description || '', type: data.type, url: data.url || '', category: data.category || 'Uncategorized', tags: data.tags || [], sourceText: data.source_text || '', iconUrl: data.icon_url || '', appStoreUrl: data.app_store_url || '', screenshots: data.screenshots || [], addedAt: new Date(data.added_at).getTime() };
 }
@@ -302,7 +334,7 @@ async function logoutAdmin(){
    card groupings shown in "Field Notes," managed the same way categories are. */
 async function loadTidbits(){
   if(!CONFIGURED) return [];
-  const { data, error } = await supabaseClient.from('tidbits').select('*').order('position', { ascending: true });
+  const { data, error } = await supabaseClient.from('tidbits').select(TIDBIT_COLUMNS).order('position', { ascending: true });
   if(error){ console.error(error); return []; }
   return data.map(t => ({
     id: t.id,
@@ -320,12 +352,12 @@ async function loadTidbitTopics(){
   }
   if(settings.tidbitTopics && settings.tidbitTopics.length){
     const cleaned = settings.tidbitTopics.filter(t => t && t.toLowerCase() !== 'general');
-    if(cleaned.length !== settings.tidbitTopics.length) await saveTidbitTopicsRow(cleaned);
+    if(cleaned.length !== settings.tidbitTopics.length) void saveTidbitTopicsRow(cleaned);
     return [...cleaned].sort((a,b)=> a.localeCompare(b));
   }
   const set = new Set(tidbits.map(t=>t.topic).filter(t => t && t.toLowerCase() !== 'general'));
   const derived = [...set].sort((a,b)=> a.localeCompare(b));
-  if(derived.length) await saveTidbitTopicsRow(derived);
+  if(derived.length) void saveTidbitTopicsRow(derived);
   return derived;
 }
 
@@ -527,7 +559,7 @@ async function insertTidbit(t){
   }
   const { data, error } = await supabaseClient.from('tidbits').insert({
     resource_id: t.resourceId, topic: t.topic, text: t.text, position: t.position || 0
-  }).select().single();
+  }).select(TIDBIT_COLUMNS).single();
   if(error){ console.error(error); showToast('Save failed: ' + error.message); return null; }
   return { id: data.id, resourceId: data.resource_id, topic: data.topic, text: data.text, position: data.position };
 }
@@ -567,14 +599,26 @@ async function init(){
     </div>`;
   }
 
-  resources = await loadResources();
-  settings = await loadSettings();
+  // Start every request together, but paint as soon as the first resource page
+  // arrives. The other requests continue while the visitor can already browse.
+  const firstResourcesPromise = loadResourcePage(0, RESOURCE_PAGE_SIZE - 1);
+  const settingsPromise = loadSettings();
+  const tidbitsPromise = loadTidbits();
+  const sessionPromise = checkSession();
+
+  try{
+    resources = (await firstResourcesPromise) || [];
+  }catch(err){
+    console.error(err);
+    resources = [];
+  }
+
+  settings = { ...DEFAULT_SETTINGS, categories: [], tidbitTopics: [], tidbitGroups: [], topicGroups: {} };
+  tidbits = [];
   categories = await loadCategories();
-  tidbits = await loadTidbits();
-  tidbitTopics = await loadTidbitTopics();
-  tidbitGroups = await loadTidbitGroups();
-  topicGroups = settings.topicGroups || {};
-  isAdmin = await checkSession();
+  tidbitTopics = [];
+  tidbitGroups = [];
+  topicGroups = {};
 
   document.getElementById('siteTitle').textContent = 'Wally Wiki';
   document.title = 'Wally Wiki';
@@ -586,6 +630,34 @@ async function init(){
 
   renderHeaderActions();
   renderAll();
+
+  // Older resources are lower priority. Add them in small batches so the
+  // browser stays responsive and each batch becomes visible progressively.
+  void loadRemainingResources();
+
+  const [loadedSettings, loadedTidbits, adminSession] = await Promise.all([
+    settingsPromise,
+    tidbitsPromise,
+    sessionPromise
+  ]);
+  settings = loadedSettings;
+  tidbits = loadedTidbits;
+  isAdmin = adminSession;
+  topicGroups = settings.topicGroups || {};
+  [categories, tidbitTopics] = await Promise.all([loadCategories(), loadTidbitTopics()]);
+  tidbitGroups = await loadTidbitGroups();
+  renderHeaderActions();
+  renderAll();
+}
+
+async function loadRemainingResources(){
+  for(let from = RESOURCE_PAGE_SIZE;; from += RESOURCE_PAGE_SIZE){
+    const page = await loadResourcePage(from, from + RESOURCE_PAGE_SIZE - 1);
+    if(!page || !page.length) return;
+    resources.push(...page);
+    renderAll();
+    if(page.length < RESOURCE_PAGE_SIZE) return;
+  }
 }
 
 /* ---------------- Auto-tag parsing engine ---------------- */
@@ -3143,6 +3215,7 @@ function escapeHtml(s){
 function escapeAttr(s){ return escapeHtml(s); }
 
 let toastTimer;
+let searchRenderTimer;
 function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -3154,7 +3227,12 @@ function showToast(msg){
 /* ---------------- Search binding ---------------- */
 document.getElementById('searchInput').addEventListener('input', (e)=>{
   searchQuery = e.target.value;
-  renderAll();
+  clearTimeout(searchRenderTimer);
+  searchRenderTimer = setTimeout(()=>{
+    renderMain();
+    document.getElementById('clearFilters').style.display = (activeTag || activeType || searchQuery) ? 'block' : 'none';
+    updateSidebarToggleLabel();
+  }, 100);
 });
 document.getElementById('clearFilters').addEventListener('click', ()=>{
   activeTag = null; activeType = null; searchQuery = '';
